@@ -1,0 +1,10 @@
+.Rhistory
+.Rapp.history
+Rsconnect/
+.DS_Store
+*.RData
+*.txt
+**/dat
+**/data
+dat/
+data/
