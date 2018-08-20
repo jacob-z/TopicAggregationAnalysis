@@ -4,10 +4,12 @@
 
 library(clue)
 
-merge.reconstruction <- function(m, dfs) {
+merge.reconstruction <- function(dfs) {
+  print("Merging matched columns")
+
   t1 <- dfs[['t1']]; t2 <- dfs[['t2']]
   t1 <- unname(as.matrix(t1)); t2 <- unname(as.matrix(t2))
-  m <- m[1:dim(t2)[2]]
+  m <- dfs[['m']][1:dim(t2)[2]]
   
   t3 <- t(rowsum(t(t2), m))
   
@@ -19,7 +21,7 @@ merge.reconstruction <- function(m, dfs) {
   return(dfs)
 }
 
-create_cost_matrix <- function(dfs, expand=FALSE, stability_test=FALSE) {
+create.cost.matrix <- function(dfs, expand=FALSE, stability_test=FALSE) {
   t1 <- dfs[['t1']]
   t2 <- dfs[['t2']]
 
@@ -50,7 +52,14 @@ create_cost_matrix <- function(dfs, expand=FALSE, stability_test=FALSE) {
   return(dfs)
 }
 
-subsample_solve <- function(lst, cutoff=1000, prop=1) {
+solve.LSAP <- function(dfs) {
+  print("Matching columns...")
+  
+  dfs[['m']] <- solve_LSAP(dfs[['c']])
+  return(dfs)
+}
+
+subsample.solve <- function(lst, cutoff=1000, prop=1) {
   
   c <- lst[["c"]]
   k_agg <- dim(lst[["t1"]])[2]
@@ -93,7 +102,7 @@ subsample_solve <- function(lst, cutoff=1000, prop=1) {
   return(apply(m, 1, which.max))
 }
 
-random_search <- function(lst, iter=1000) {
+random.search <- function(lst, iter=1000) {
   
   c <- lst[["c"]]
   t1 <- lst[["t1"]]
@@ -129,7 +138,7 @@ random_search <- function(lst, iter=1000) {
   return(m)
 }
 
-priority_solve <- function(file1, file2) {
+priority.solve <- function(file1, file2) {
   
   lst <- create_cost_matrix(file1, file2)
   

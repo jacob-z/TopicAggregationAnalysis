@@ -2,21 +2,29 @@
 ### Jacob Zimmer
 ### Tools for working with the output of Topics Telephone experiments
 
-parse.files <- function(file1, file2) {
+parse.files <- function(file1, file2, stability_test=FALSE) {
+  print("Loading files...")
+
   load(file1)
   t1 <- data.frame(theta)
-  names(t1) <- unlist(mantitles)
+  if (! stability_test) {
+    names(t1) <- unlist(mantitles)
+  }
   row.names(t1) <- titles
 
   load(file2)
   t2 <- data.frame(theta)
-  if (dim(t2)[2] <= dim(t1)[2]) {names(t2) <- unlist(mantitles)}
+  if (dim(t2)[2] <= dim(t1)[2] && ! stability_test) {
+    names(t2) <- unlist(mantitles)
+  }
   row.names(t2) <- titles
   
   return(list(t1=t1, t2=t2))
 }
 
 filter.models <- function(dfs, selected_topics) {
+  print("Filtering models...")
+
   x1 <- dfs[['t1']][names(dfs[['t1']]) %in% selected_topics]
   x2 <- dfs[['t2']][names(dfs[['t2']]) %in% selected_topics]
   y1 <- rowSums(dfs[['t1']][ ! (names(dfs[['t1']]) %in% selected_topics)])
@@ -95,6 +103,24 @@ roc <- function(t1, t2, raw_docs=FALSE) {
   }
   
   return(mean(res))
+}
+
+score.models <- function(dfs, stability_test=FALSE) {
+  print("Scoring model...")
+
+  t1 <- dfs[['t1']]
+
+  if (stability_test) {
+    t2 <- dfs[['t3']]
+  } else {
+    t2 <- dfs[['t2']]
+  }
+
+  dfs[['mad']] <- mad(t1, t2)
+  dfs[['mse']] <- mse(t1, t2)
+  dfs[['roc']] <- roc(t1, t2)
+
+  return(dfs)
 }
 
 get.worst.docs <- function(n, t1, t2, type="mad") {
