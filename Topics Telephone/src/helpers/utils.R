@@ -2,28 +2,42 @@
 ### Jacob Zimmer
 ### Tools for working with the output of Topics Telephone experiments
 
-parse.files <- function(file1, file2, stability_test=FALSE) {
-  print("Loading files...")
+parse.files <- function(file1, file2, model="trellis", stability_test=FALSE) {
+  cat("Loading files...\n")
 
-  load(file1)
-  t1 <- data.frame(theta)
-  if (! stability_test) {
-    names(t1) <- unlist(mantitles)
-  }
-  row.names(t1) <- titles
+  if (model == "trellis") {
 
-  load(file2)
-  t2 <- data.frame(theta)
-  if (dim(t2)[2] <= dim(t1)[2] && ! stability_test) {
-    names(t2) <- unlist(mantitles)
+    load(file1)
+    t1 <- data.frame(theta)
+    if (! stability_test) {
+      names(t1) <- unlist(mantitles)
+    }
+    row.names(t1) <- titles
+
+    load(file2)
+    t2 <- data.frame(theta)
+    if (dim(t2)[2] <= dim(t1)[2] && ! stability_test) {
+      names(t2) <- unlist(mantitles)
+    }
+    row.names(t2) <- titles
+
+  } else if (model == "stm") {
+
+
+
+  } else if (model == "tm-lda") {
+
+
+
+  } else {
+    stop(sprintf("Error: Model type %s is not valid", model))
   }
-  row.names(t2) <- titles
   
   return(list(t1=t1, t2=t2))
 }
 
 filter.models <- function(dfs, selected_topics) {
-  print("Filtering models...")
+  cat("Filtering models...\n")
 
   x1 <- dfs[['t1']][names(dfs[['t1']]) %in% selected_topics]
   x2 <- dfs[['t2']][names(dfs[['t2']]) %in% selected_topics]
@@ -106,7 +120,7 @@ roc <- function(t1, t2, raw_docs=FALSE) {
 }
 
 score.models <- function(dfs, stability_test=FALSE) {
-  print("Scoring model...")
+  cat("Scoring models...\n")
 
   t1 <- dfs[['t1']]
 

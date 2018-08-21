@@ -6,8 +6,8 @@ source("helpers/utils.R")
 source("helpers/utils_optimize.R")
 
 stability.test <- function(files) {
-  file1 <- files[1]; print(file1)
-  file2 <- files[2]; print(file2)
+  file1 <- files[1]; cat(sprintf("%s\n", file1)
+  file2 <- files[2]; cat(sprintf("%s\n", file2)
   
   dfs <- parse.files(file1, file2, stability_test=TRUE) %>%
     create.cost.matrix(stability_test=TRUE) %>%
@@ -22,8 +22,8 @@ stability.test <- function(files) {
 
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) < 2) {
-  print("You must specify a directory of models to test and k!")
-  print("USAGE: Rscript stability_test.R path_to_dir")
+  cat("You must specify a directory of models to test and k!\n")
+  cat("USAGE: Rscript stability_test.R path_to_dir\n")
 } else {
   
   dir_to_process <- args[[1]]
@@ -44,7 +44,7 @@ if (length(args) < 2) {
   res_mse <- mean(unlist(lapply(res_dfs, `[`, 'mse')))
   res_roc <- mean(unlist(lapply(res_dfs, `[`, 'roc')))
   
-  print(sprintf("Stability results at K = %s:", k))
+  cat(sprintf("Stability results at K = %s:\n", k))
   cat(sprintf("MAD:\t%.4f\n", res_mad))
   cat(sprintf("MSE:\t%.4f\n", res_mse))
   cat(sprintf("ROC:\t%.4f\n", res_roc))

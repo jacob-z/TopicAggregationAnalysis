@@ -5,7 +5,7 @@
 library(clue)
 
 merge.reconstruction <- function(dfs) {
-  print("Merging matched columns")
+  cat("Merging matched columns...\n")
 
   t1 <- dfs[['t1']]; t2 <- dfs[['t2']]
   t1 <- unname(as.matrix(t1)); t2 <- unname(as.matrix(t2))
@@ -29,7 +29,7 @@ create.cost.matrix <- function(dfs, expand=FALSE, stability_test=FALSE) {
   k_agg <- dim(t1)[2]
   k_raw <- dim(t2)[2]
   
-  print(paste0("Creating ", k_agg, " by ", k_raw, " cost matrix (MSE)..."))
+  cat(paste0("Creating ", k_agg, " by ", k_raw, " cost matrix (MSE)...\n"))
   cost_mat <- matrix(data = 0, nrow = k_agg, ncol = k_raw)
   for(i in 1:k_agg){
     for (j in 1:k_raw) {
@@ -39,7 +39,7 @@ create.cost.matrix <- function(dfs, expand=FALSE, stability_test=FALSE) {
   
   #replicate columns for multiple assignments in matching
   if (expand) {
-    print(paste0("Modifying to ", k_raw, " by ", k_agg*k_raw, " for multiple assignment matching..."))
+    cat(paste0("Modifying to ", k_raw, " by ", k_agg*k_raw, " for multiple assignment matching...\n"))
     cost_mat <- t(cost_mat)
     cost_mat <- do.call(cbind, replicate(k_raw, cost_mat, simplify=FALSE))
   }
@@ -53,7 +53,7 @@ create.cost.matrix <- function(dfs, expand=FALSE, stability_test=FALSE) {
 }
 
 solve.LSAP <- function(dfs) {
-  print("Matching columns...")
+  cat("Matching columns...\n")
   
   dfs[['m']] <- solve_LSAP(dfs[['c']])
   return(dfs)
