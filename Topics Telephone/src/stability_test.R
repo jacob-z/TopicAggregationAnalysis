@@ -6,8 +6,8 @@ source("helpers/utils.R")
 source("helpers/utils_optimize.R")
 
 stability.test <- function(files) {
-  file1 <- files[1]; cat(sprintf("%s\n", file1)
-  file2 <- files[2]; cat(sprintf("%s\n", file2)
+  file1 <- files[1]; cat(sprintf("%s\n", file1))
+  file2 <- files[2]; cat(sprintf("%s\n", file2))
   
   dfs <- parse.files(file1, file2, stability_test=TRUE) %>%
     create.cost.matrix(stability_test=TRUE) %>%
@@ -23,7 +23,7 @@ stability.test <- function(files) {
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) < 2) {
   cat("You must specify a directory of models to test and k!\n")
-  cat("USAGE: Rscript stability_test.R path_to_dir\n")
+  cat("USAGE: Rscript stability_test.R path_to_dir k\n")
 } else {
   
   dir_to_process <- args[[1]]

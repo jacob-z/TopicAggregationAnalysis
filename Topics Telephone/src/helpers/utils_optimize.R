@@ -29,7 +29,7 @@ create.cost.matrix <- function(dfs, expand=FALSE, stability_test=FALSE) {
   k_agg <- dim(t1)[2]
   k_raw <- dim(t2)[2]
   
-  cat(paste0("Creating ", k_agg, " by ", k_raw, " cost matrix (MSE)...\n"))
+  cat(paste0("Creating ", k_agg, " by ", k_raw, " cost matrix (MAD)...\n"))
   cost_mat <- matrix(data = 0, nrow = k_agg, ncol = k_raw)
   for(i in 1:k_agg){
     for (j in 1:k_raw) {
