@@ -56,42 +56,52 @@ word.count <- function(str1) {
   return(sapply(gregexpr("[[:alpha:]]+", str1), function(x) sum(x > 0)))
 }
 
-mad <- function(t1, t2, raw_docs=FALSE, raw_tops=FALSE) {
-  t1 <- unname(as.matrix(t1))
-  t2 <- unname(as.matrix(t2))
+mad <- function(df_t1, df_t2, raw_docs=FALSE, raw_tops=FALSE) {
+  t1 <- unname(as.matrix(df_t1))
+  t2 <- unname(as.matrix(df_t2))
 
   if (raw_docs && raw_tops) {
     print("Arguments are exclusive")
     return(-1)
   }
 
+  res <- -1
+
   if (raw_docs) {
-    return(rowMeans(abs(t1-t2)))
+    res <- rowMeans(abs(t1-t2))
+    names(res) <- row.names(df_t1)
+    return(res)
+  } else if (raw_tops) {
+    res <- colMeans(abs(t1-t2))
+    names(res) <- names(df_t1)
+    return(res)
+  } else {
+    return(mean(colMeans(abs(t1-t2))))
   }
-  if (raw_tops) {
-    return(colMeans(abs(t1-t2)))
-  }
-  
-  return(mean(colMeans(abs(t1-t2))))
 }
 
-mse <- function(t1, t2, raw_docs=FALSE, raw_tops=FALSE) {
-  t1 <- unname(as.matrix(t1))
-  t2 <- unname(as.matrix(t2))
+mse <- function(df_t1, df_t2, raw_docs=FALSE, raw_tops=FALSE) {
+  t1 <- unname(as.matrix(df_t1))
+  t2 <- unname(as.matrix(df_t2))
 
   if (raw_docs && raw_tops) {
     print("Arguments are exclusive")
     return(-1)
   }
 
+  res <- -1
+
   if (raw_docs) {
-    return(rowMeans((t1-t2)*(t1-t2)))
+    res <- rowMeans((t1-t2)*(t1-t2))
+    names(res) <- row.names(df_t1)
+    return(res)
+  } else if (raw_tops) {
+    res <- colMeans((t1-t2)*(t1-t2))
+    names(res) <- names(df_t1)
+    return(res)
+  } else {
+    return(mean(colMeans((t1-t2)*(t1-t2))))
   }
-  if (raw_tops) {
-    return(colMeans((t1-t2)*(t1-t2)))
-  }
-  
-  return(mean(colMeans((t1-t2)*(t1-t2))))
 }
 
 roc <- function(t1, t2, raw_docs=FALSE) {
@@ -113,6 +123,7 @@ roc <- function(t1, t2, raw_docs=FALSE) {
   })
 
   if (raw_docs) {
+    names(res) <- row.names(t1)
     return(res)
   }
   
@@ -137,60 +148,100 @@ score.models <- function(dfs, raw_docs=FALSE, raw_tops=FALSE, stability_test=FAL
   return(dfs)
 }
 
-get.worst.docs <- function(n, t1, t2, type="mad") {
-  if (type == "mad") {
-    dist <- mad(t1, t2, raw_docs=T); names(mad_dist) <- row.names(t1)
-  } else if (type == "roc") {
-    dist <- roc(t1, t2, raw_docs=T); names(mad_dist) <- row.names(t1)
-  } else if (type == "mse") {
-    dist <- mse(t1, t2, raw_docs=T); names(mad_dist) <- row.names(t1)
-  }
-  return(dist[1:n])
+rank.worst.docs <- function(dfs) {
+  cat("Ranking documents...\n")
+
+  dat <- data.frame("mad_doc" = names(sort(dfs[["mad"]], decreasing=TRUE)),
+                    "mad"     = sort(dfs[["mad"]], decreasing=TRUE),
+                    "mse_doc" = names(sort(dfs[["mse"]], decreasing=TRUE)),
+                    "mse"     = sort(dfs[["mse"]], decreasing=TRUE),
+                    "roc_doc" = names(sort(dfs[["roc"]], decreasing=FALSE)),
+                    "roc"     = sort(dfs[["roc"]], decreasing=FALSE))
+
+  row.names(dat) <- c()
+  dfs[['worst_docs']] <- dat
+  return(dfs)
 }
 
-print.worst.docs <- function(n, t1, t2) {
-  mad_dist <- mad(t1, t2, raw_docs=T); names(mad_dist) <- row.names(t1)
-  roc_dist <- roc(t1, t2, raw_docs=T); names(roc_dist) <- row.names(t1)
+print.worst.docs <- function(dfs, n_docs) {
+  cat(sprintf("Printing top %d worst documents by error metric:\n", n_docs))
 
-  dat <- data.frame("mad_doc"=names(sort(mad_dist, decreasing = T)),
-                    "mad"=sort(mad_dist, decreasing = T),
-                    "roc_doc"=names(sort(roc_dist, decreasing = F)),
-                    "roc"=sort(roc_dist, decreasing = F))
+  dat <- dfs[["worst_docs"]]
 
-  for (i in 1:n) {
-    cat(sprintf("%d \t %15s \t %.4f \t %15s \t %.4f \n", i,
-                substr(dat$mad_doc[i], start=1, stop=15), dat$mad[i], 
+  cat("Rank \t Document \t\t MAD \t\t Document \t\t MSE \t\t Document \t\t ROC\n")
+  for (i in 1:n_docs) {
+    cat(sprintf("%d \t %15s \t %.4f \t %15s \t %.4f \t %15s \t %.4f \n", i,
+                substr(dat$mad_doc[i], start=1, stop=15), dat$mad[i],
+                substr(dat$mse_doc[i], start=1, stop=15), dat$mse[i], 
                 substr(dat$roc_doc[i], start=1, stop=15), dat$roc[i]))
   }
+  cat("\n\n")
+
+  return(dfs)
 }
 
-print.assignments <- function(query, t1, t2) {
-  idx <- match(query, row.names(t1))
-  t1_dist <- t1[idx,]; row.names(t1_dist) <- c()
-  t2_dist <- t2[idx,]; row.names(t2_dist) <- c()
+print.assignments <- function(dfs, n_docs, source_dir) {
+  t1 <- dfs[["t1"]]
+  t2 <- dfs[["t2"]]
+  ranked_docs <- dfs[["worst_docs"]]
   
-  k <- dim(t1)[2]
-  mad_score <- mad(t1, t2, raw_docs=T)[idx]
-  roc_score <- roc(t1, t2, raw_docs=T)[idx]
-  
-  cat(sprintf("Document Title: %s\n", query))
-  
-  cat(sprintf("Sample Text: "))
-  filename <- paste("~/Desktop/Topic Aggregation Analysis/Topics Telephone/dat/corpora/ex5/", 
-                    str_replace(query, " ", "_"), sep="")
-  file_text <- readChar(filename, ifelse(file.info(filename)$size > 2000, 2000, file.info(filename)$size))
-  cat(sprintf("%s\n\n", str_squish(file_text)))
-  
-  cat(sprintf("Error metrics:\t\tMAD = %.4f\tROC = %.4f\n\n", mad_score, roc_score))
-  cat(sprintf("Document-Topic Proportions:\n"))
-  cat(sprintf("Topic Label\t\tOriginal\tReconstruction\n"))
-  
-  k <- length(t1_dist)
-  for (i in 1:k) {
-    docname <- names(t1_dist)[i] %>% str_trunc(15) %>% str_pad(15, "right")
-    cat(sprintf("%s\t\t%.4f\t\t%.4f\n", docname, unname(t1_dist)[i], unname(t2_dist)[i]))
+  queries <- vector("character", n_docs)
+  j <- 1
+  for (i in 1:dim(t1)[1]) {
+    docs <- ranked_docs[i,]
+    for (cat in c("mad_doc", "mse_doc", "roc_doc")) {
+      doc <- as.character(unlist(unname(docs[cat])))
+      if (!(doc %in% queries)) {
+        queries[j] <- doc
+        j <- j + 1
+      }
+    }
+    if (j == n_docs + 1) {break}
   }
+  
+  for (query in queries) {
+    idx <- match(query, row.names(t1))
+    t1_dist <- t1[idx,]; row.names(t1_dist) <- c()
+    t2_dist <- t2[idx,]; row.names(t2_dist) <- c()
+    
+    k <- dim(t1)[2]
+    mad_score <- mad(t1, t2, raw_docs=T)[idx]
+    roc_score <- roc(t1, t2, raw_docs=T)[idx]
+    
+    cat(sprintf("Document Title: %s\n", query))
+    
+    cat(sprintf("Sample Text: "))
+    filename <- paste(source_dir, gsub(" ", "_", query), sep="")
+    file_text <- readChar(filename, ifelse(file.info(filename)$size > 2000, 2000, file.info(filename)$size))
+    cat(sprintf("%s\n\n", str_squish(file_text)))
+    
+    cat(sprintf("Error metrics:\t\tMAD = %.4f\tROC = %.4f\n\n", mad_score, roc_score))
+    cat(sprintf("Document-Topic Proportions:\n"))
+    cat(sprintf("Topic Label\t\tOriginal\tReconstruction\n"))
+    
+    k <- length(t1_dist)
+    for (i in 1:k) {
+      docname <- names(t1_dist)[i] %>% str_trunc(15) %>% str_pad(15, "right")
+      cat(sprintf("%s\t\t%.4f\t\t%.4f\n", docname, unname(t1_dist)[i], unname(t2_dist)[i]))
+    }
+    cat("\n\n")
+  }
+  
+  
+  return(dfs)
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
