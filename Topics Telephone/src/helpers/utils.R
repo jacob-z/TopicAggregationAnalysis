@@ -119,7 +119,7 @@ roc <- function(t1, t2, raw_docs=FALSE) {
   return(mean(res))
 }
 
-score.models <- function(dfs, stability_test=FALSE) {
+score.models <- function(dfs, raw_docs=FALSE, raw_tops=FALSE, stability_test=FALSE) {
   cat("Scoring models...\n")
 
   t1 <- dfs[['t1']]
@@ -130,9 +130,9 @@ score.models <- function(dfs, stability_test=FALSE) {
     t2 <- dfs[['t2']]
   }
 
-  dfs[['mad']] <- mad(t1, t2)
-  dfs[['mse']] <- mse(t1, t2)
-  dfs[['roc']] <- roc(t1, t2)
+  dfs[['mad']] <- mad(t1, t2, raw_docs, raw_tops)
+  dfs[['mse']] <- mse(t1, t2, raw_docs, raw_tops)
+  dfs[['roc']] <- roc(t1, t2, raw_docs)
 
   return(dfs)
 }

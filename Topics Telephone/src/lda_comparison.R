@@ -24,7 +24,7 @@ pipeline <- function(model1, model2) {
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) < 1) {
   cat("You must specify a directory of STM models to process!\n")
-  cat("USAGE: Rscript stability_test.R path_to_dir\n")
+  cat("USAGE: Rscript lda_comparison.R path_to_dir\n")
 } else {
   
   dir_to_process <- args[[1]]

@@ -10,7 +10,7 @@ source("helpers/utils.R")
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) < 3) {
   cat("You must specify two flat models and a file containing a subset of topic labels!\n")
-  cat("USAGE: Rscript path_to_model1 path_to_model2 path_to_terms\n")
+  cat("USAGE: Rscript process_models.R path_to_model1 path_to_model2 path_to_terms\n")
 } else {
   
   file1 <- args[[1]]
