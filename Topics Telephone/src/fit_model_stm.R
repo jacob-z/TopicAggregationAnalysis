@@ -50,7 +50,7 @@ if (length(args) < 4) {
   if (out_type == "trellis") {
     save(beta, theta, vocab, titles, filenames, file = out_file)
   } else {
-    save(model, fille = out_file)
+    save(model, file = out_file)
   }
 }
 
