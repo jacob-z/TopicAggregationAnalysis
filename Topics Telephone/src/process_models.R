@@ -20,6 +20,10 @@ if (length(args) < 3) {
   # file1 <- "../dat/models/ex5/Flat_V5K200_STM.RData"
   # file2 <- "../dat/models/ex5/Flat_V5K300_STM.RData"
   # terms <- "../dat/models/ex5/selected_topics.txt"
+  
+  file1 <- "~/Desktop/arxiv_k200_initial_flattened.RData"
+  file2 <- "~/Desktop/arxiv_k300_reconstruction_flattened.RData"
+  terms <- "~/Desktop/arxiv_reconstruction_selected.txt"
 
   selected_topics <- readChar(terms, file.info(terms)$size) %>%
     str_split("\n") %>% unlist()
