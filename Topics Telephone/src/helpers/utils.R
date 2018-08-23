@@ -130,6 +130,28 @@ roc <- function(t1, t2, raw_docs=FALSE) {
   return(mean(res))
 }
 
+top.roc <- function(t1, t2, raw_docs=FALSE) {
+  N <- dim(t1)[1]
+  k <- dim(t1)[2]
+  S <- k*(k+1)/2
+  S <- 55
+  
+  res <- sapply(1:N, function(i) {
+    x <- unlist(t1[i,])[1:10]; y <- unlist(t2[i,])[1:10]
+    
+    W <- unname(wilcox.test(x, y)$statistic)
+    
+    return( W/S )
+  })
+  
+  if (raw_docs) {
+    names(res) <- row.names(t1)
+    return(res)
+  }
+  
+  return(mean(res))
+}
+
 score.models <- function(dfs, raw_docs=FALSE, raw_tops=FALSE, stability_test=FALSE) {
   cat("Scoring models...\n")
 
