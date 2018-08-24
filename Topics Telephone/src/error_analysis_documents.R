@@ -141,7 +141,7 @@ graph.worst <- function(dfs, n_docs) {
   colors <- c("green", "yellow", "red", "turquoise1", "blue", "purple")
   g <- ggplot(dat, aes(x=Original, y=Reconstructed)) + geom_point() + xlim(0,1) + ylim(0,1)
   for (i in 1:length(code_dists)) {
-    g <- g + geom_point(data = code_dists[[i]], aes(x=original, y=reconstructed), color = colors[i])
+    g <- g + geom_point(data = code_dists[[i]], aes(x=original, y=reconstructed), color = colors[i], size=3)
   }
   g + geom_abline(intercept = 0, slope = 1, linetype="dashed")
   ### END TEMP
