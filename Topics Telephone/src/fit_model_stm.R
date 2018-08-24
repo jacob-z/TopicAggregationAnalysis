@@ -53,24 +53,3 @@ if (length(args) < 4) {
     save(model, file = out_file)
   }
 }
-
-
-
-
-
-
-setwd("/Users/jacobzimmer/Desktop/Topic Aggregation Analysis/Topics Telephone/dat/corpora/")
-
-dir <- "arxiv_abstracts/"
-filenames <- list.files(dir)
-files <- lapply(filenames, function(x) { readLines(file.path(dir, x)) })
-files <- lapply(files, function(x) paste(x, sep="", collapse=" "))
-files <- t(data.frame(files))
-rownames(files) <- c()
-
-filenames <- data.frame(filenames)
-files <- data.frame(files)
-
-save(filenames, file="/Users/jacobzimmer/Desktop/arxiv_corpus_titles.RData")
-save(files, file="/Users/jacobzimmer/Desktop/arxiv_corpus.RData")
-rm(list=ls())

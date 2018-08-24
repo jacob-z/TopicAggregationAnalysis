@@ -94,25 +94,31 @@ graph.worst <- function(dfs, n_docs) {
   
   ### TEMP
   green  <- c("Ivy Bridge (microarchitecture).txt", "Tijuana.txt", "FC Akademiya Tolyatti.txt",
-              "Health Information Technology for Economic and Clinical Health Act.txt")
+              "Health Information Technology for Economic and Clinical Health Act.txt",
+              "Pat Green.txt", "Data erasure.txt", "San Jose, California.txt")
   yellow <- c("Seatrain Lines.txt", "Tianhe-1.txt", "Recycling in Japan.txt", "GlobalEnglish.txt",
               "Certified Information Systems Security Professional.txt", "Zettabox.txt",
               "Information Systems Professional.txt", "AdMob.txt", "Internet in Australia.txt",
-              "Regulation on Wholesale Energy Market Integrity and Transparency.txt")
+              "Regulation on Wholesale Energy Market Integrity and Transparency.txt",
+              "Automated Border Control systems.txt", "Waste management in Switzerland.txt",
+              "Alpha Data.txt", "Delta Force: Urban Warfare.txt")
   red    <- c("Darknet market.txt", "Alan Turing (sculpture).txt", "Alan Turing Memorial.txt",
               "Recovery of an MMO Junkie.txt", "Address Verification System.txt")
   orange <- c("HECToR.txt", "GPU (disambiguation).txt", "Source code.txt", "Odyssey.txt",
-              "Jonestown.txt", "Recovery.txt")
+              "Jonestown.txt", "Recovery.txt", "National Information Technology Agency.txt",
+              "Bra size.txt", "Codebreaker (film).txt")
   blue   <- c("EuroWordNet.txt", "EXtended WordNet.txt", "IndoWordNet.txt", "WordNet.txt",
               "Warrant officer (United Kingdom).txt", "News International phone hacking scandal.txt", 
               "Byte order mark.txt", "50 Most Influential (Bloomberg Markets ranking).txt",
               "Homeostasis.txt", "Quorum (distributed computing).txt", "Kabbalah.txt",
               "Talmud.txt", "Merlin (2008 TV series).txt", "BabelNet.txt", "Deadlock.txt",
-              "EPU.txt")
+              "EPU.txt", "Variable-width encoding.txt", "Escape sequences in C.txt",
+              "Eventual consistency.txt", "Arduin Glaber.txt", "MacBook family.txt")
   purple <- c("La Academia 6: Última Generación.txt", "Priority ceiling protocol.txt", 
               "Charlotte Brontë.txt", "M4 Sherman variants.txt", "Priority inheritance.txt",
               "Carrier frequency.txt", "Type 03 Chū-SAM.txt", "Radeon HD 7000 Series.txt",
-              "Frigate.txt")
+              "Frigate.txt", "MIM-104 Patriot.txt", "Laurence Olivier.txt", "AAM-4.txt",
+              "AMD Radeon Rx 200 series.txt", "Hector Monsegur.txt")
   color_codes <- list(green, yellow, red, orange, blue, purple)
   
   # Create subsets for graphing
@@ -132,7 +138,7 @@ graph.worst <- function(dfs, n_docs) {
   }
   
   # Graph subsets
-  colors <- c("green", "yellow", "red", "orange", "blue", "purple")
+  colors <- c("green", "yellow", "red", "turquoise1", "blue", "purple")
   g <- ggplot(dat, aes(x=Original, y=Reconstructed)) + geom_point() + xlim(0,1) + ylim(0,1)
   for (i in 1:length(code_dists)) {
     g <- g + geom_point(data = code_dists[[i]], aes(x=original, y=reconstructed), color = colors[i])

@@ -44,8 +44,8 @@ if (length(args) < 1) {
   
   # Select best based on convergence
   cat("Selecting best model...\n")
-  convs <- vector("integer", 21)
-  for (i in 1:21) {
+  convs <- vector("integer", length(models))
+  for (i in 1:length(models)) {
     convs[i] <- models[[i]]$convergence$bound[length(models[[i]]$convergence$bound)]
   }
   
